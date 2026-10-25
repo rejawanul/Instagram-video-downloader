@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  instagram-downloader:
+    build: .
+    container_name: instagram-downloader
+    restart: unless-stopped
+    ports:
+      - "5055:5055"
+    volumes:
+      - ./downloads:/app/downloads
+      - ./settings.json:/app/settings.json
+      - ./cookies.txt:/app/cookies.txt
+    environment:
+      - PORT=5055

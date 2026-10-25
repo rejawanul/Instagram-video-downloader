@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Video Downloader | Mac mini M4 Original Quality MP4</title>
+  <meta name="description" content="Download Instagram Reels, Videos, and full Channels/Profiles in 100% original full upload quality (.MP4) on Mac mini M4 macOS.">
+  <link rel="icon" type="image/svg+xml" href="/static/assets/icon.svg">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <a href="/" class="nav-brand" id="brand-link">
+      <img src="/static/assets/icon.svg" alt="Instagram Downloader Logo" class="brand-icon">
+      <div>
+        <div class="brand-title">InstaDownloader Pro</div>
+      </div>
+      <div class="brand-badges">
+        <span class="badge-m4">Mac mini M4</span>
+      </div>
+    </a>
+
+    <div class="nav-actions">
+      <!-- Session / Cookie status badge -->
+      <div class="session-badge" id="btn-session-status" title="Instagram Authentication Status">
+        <span class="status-dot" id="session-dot"></span>
+        <span id="session-status-text">Guest Mode</span>
+      </div>
+
+      <!-- macOS Downloads Folder button -->
+      <button class="btn-icon" id="btn-open-folder" title="Open Downloads Folder in macOS Finder">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+        </svg>
+        <span>Finder</span>
+      </button>
+
+      <!-- Settings button -->
+      <button class="btn-icon" id="btn-open-settings" title="Settings & Instagram Cookies">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+
+    <!-- Hero Header -->
+    <section class="hero-section">
+      <div class="hero-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        Apple Silicon M4 Native Acceleration
+      </div>
+      <h1 class="hero-title">Download Instagram Videos <br><span class="hero-gradient-text">In Full Original Quality</span></h1>
+      <p class="hero-subtitle">Single Reels, Video Posts, or Full Channels & Profiles. 100% loss-free original resolution strictly remuxed to .MP4 format.</p>
+    </section>
+
+    <!-- Mode Selector Tabs -->
+    <div class="tabs-container">
+      <div class="tab-pills">
+        <button class="tab-btn active" id="tab-single-btn">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Single Video / Reel
+        </button>
+        <button class="tab-btn" id="tab-channel-btn">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          Channel / Profile Explorer
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Input Card -->
+    <section class="search-card" id="search-card-container">
+      <form id="download-form" class="search-input-group" onsubmit="return false;">
+        <div class="input-icon-left">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          id="url-input" 
+          class="search-input" 
+          placeholder="Paste Instagram Reel, Video URL (e.g. https://www.instagram.com/reel/...) or @channel"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <div class="input-actions">
+          <button type="button" class="btn-paste" id="btn-paste-clipboard" title="Paste from Clipboard">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Paste
+          </button>
+          <button type="submit" class="btn-submit" id="btn-analyze">
+            <span id="btn-submit-text">Fetch Video</span>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Feature Badges -->
+    <div class="features-pills">
+      <div class="feature-pill">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        Original Upload Resolution (1080p / 4K)
+      </div>
+      <div class="feature-pill">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        Strict .MP4 Container (Lossless FFmpeg Remux)
+      </div>
+      <div class="feature-pill">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        Batch Channel Downloads
+      </div>
+      <div class="feature-pill">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        1-Click macOS Finder Reveal
+      </div>
+    </div>
+
+    <!-- Live Download Progress Card -->
+    <section class="progress-card" id="download-progress-card">
+      <div class="progress-header">
+        <div class="progress-title-box">
+          <div class="spinner-icon" id="progress-spinner"></div>
+          <span class="progress-status-text" id="progress-status-label">Downloading in Full Quality...</span>
+        </div>
+        <div class="progress-percent" id="progress-percent-label">0%</div>
+      </div>
+
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+
+      <div class="progress-metrics">
+        <span id="progress-speed">Speed: 0 MB/s</span>
+        <span id="progress-downloaded">0 MB / 0 MB</span>
+        <span id="progress-eta">ETA: --:--</span>
+      </div>
+
+      <div class="complete-actions" id="complete-actions" style="display: none; flex-wrap: wrap; gap: 10px;">
+        <a class="btn-submit" id="btn-save-device" href="#" download style="text-decoration: none;">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Save to Device (.mp4)</span>
+        </a>
+        <button class="btn-finder" id="btn-reveal-current">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+          </svg>
+          Reveal in macOS Finder
+        </button>
+        <button class="btn-icon" id="btn-play-current">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Play Video
+        </button>
+      </div>
+    </section>
+
+    <!-- Single Video Preview Card -->
+    <section class="preview-card" id="single-preview-card">
+      <div class="preview-grid">
+        <!-- Thumbnail / Poster -->
+        <div class="poster-box" id="preview-poster-box">
+          <img src="" alt="Instagram Video Preview" class="poster-img" id="preview-thumbnail">
+          <span class="quality-badge-floating" id="preview-badge">1080p Full HD</span>
+          <span class="duration-pill" id="preview-duration">0:00</span>
+        </div>
+
+        <!-- Details -->
+        <div class="preview-details">
+          <div>
+            <div class="uploader-row">
+              <div class="uploader-info">
+                <span class="uploader-handle" id="preview-uploader">@instagram</span>
+                <svg class="verified-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+            </div>
+
+            <h2 class="video-title" id="preview-title">Video Caption Title</h2>
+            <div class="caption-box" id="preview-caption"></div>
+
+            <div class="specs-grid">
+              <div class="spec-item">
+                <div class="spec-label">Resolution</div>
+                <div class="spec-val" id="spec-resolution">1080x1920</div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-label">Format</div>
+                <div class="spec-val" id="spec-format">Strict MP4</div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-label">Engine</div>
+                <div class="spec-val" id="spec-engine">Apple M4 / FFmpeg</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-actions">
+            <button class="btn-download-big" id="btn-start-single-download">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Download Full Quality MP4</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Channel / Profile Explorer View -->
+    <section class="channel-view" id="channel-view-container">
+      <!-- Profile Header -->
+      <div class="channel-profile-card">
+        <div class="channel-info-left">
+          <img src="" alt="Profile Avatar" class="channel-avatar" id="channel-avatar">
+          <div>
+            <div class="channel-name">
+              <span id="channel-full-name">Creator Name</span>
+              <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;" id="channel-username">@handle</span>
+            </div>
+            <div class="channel-bio" id="channel-bio">Bio description</div>
+          </div>
+        </div>
+
+        <div class="channel-stats">
+          <div class="stat-box">
+            <div class="stat-number" id="channel-followers">0</div>
+            <div class="stat-label">Followers</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="channel-video-count">0</div>
+            <div class="stat-label">Videos Found</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="channel-toolbar">
+        <div class="toolbar-left">
+          <button class="btn-text" id="btn-select-all">Select All</button>
+          <button class="btn-text" id="btn-deselect-all">Deselect All</button>
+          <span style="font-size: 0.85rem; color: var(--text-dim);" id="channel-selection-count">0 selected</span>
+        </div>
+        <div>
+          <button class="btn-submit" id="btn-batch-download">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span id="btn-batch-download-text">Download Selected Videos</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Videos Grid -->
+      <div class="channel-grid" id="channel-videos-grid"></div>
+    </section>
+
+    <!-- Downloaded Library & History -->
+    <section class="history-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+          </svg>
+          Downloaded Videos Library
+        </h3>
+        <button class="btn-icon" id="btn-refresh-history">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh
+        </button>
+      </div>
+
+      <div class="history-grid" id="history-grid"></div>
+    </section>
+
+  </main>
+
+  <!-- Settings & Instagram Session Modal -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Downloader Settings</h3>
+        <button class="btn-close-modal" id="btn-close-settings">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Instagram Session Cookie -->
+        <div class="form-group">
+          <label class="form-label">Instagram Session ID (Unlocks 1080p/4K & Channels)</label>
+          <input type="text" id="setting-session-id" class="form-input" placeholder="Paste your Instagram sessionid cookie">
+          
+          <div class="cookie-helper-box">
+            <strong>💡 How to get your Session ID (10 seconds):</strong>
+            <ol>
+              <li>Open <code>instagram.com</code> in Chrome or Safari where you are logged in.</li>
+              <li>Press <code>Right-Click -> Inspect -> Application</code> (or <code>Storage</code>).</li>
+              <li>Under <strong>Cookies -> instagram.com</strong>, copy the value of <code>sessionid</code> and paste it above!</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Upload cookies.txt -->
+        <div class="form-group">
+          <label class="form-label">Or Import Netscape cookies.txt File</label>
+          <div class="dropzone-box" id="cookie-dropzone">
+            <input type="file" id="cookie-file-input" accept=".txt" style="display: none;">
+            <p>📁 Drag and drop your <code>cookies.txt</code> file here, or click to browse</p>
+          </div>
+        </div>
+
+        <!-- Download Path -->
+        <div class="form-group">
+          <label class="form-label">Download Directory</label>
+          <input type="text" id="setting-download-dir" class="form-input" placeholder="/Volumes/SSD/Programming/Instagram video downloader/downloads">
+        </div>
+
+        <!-- Hardware acceleration info -->
+        <div class="form-group">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 8px;">
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--accent-cyan);">Hardware Remuxer: Apple Silicon VideoToolbox</span>
+            <span style="font-size: 0.75rem; color: var(--accent-green); font-weight: 700;">ACTIVE (M4)</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-icon" id="btn-cancel-settings">Cancel</button>
+        <button class="btn-submit" id="btn-save-settings">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Player Modal -->
+  <div class="modal-overlay" id="player-modal">
+    <div class="modal-box video-modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="player-modal-title">Video Preview</h3>
+        <button class="btn-close-modal" id="btn-close-player">✕</button>
+      </div>
+      <div class="player-container">
+        <video id="html5-video-player" class="custom-video-player" controls autoplay playsinline></video>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-finder" id="btn-player-finder">Reveal in Finder</button>
+        <a id="btn-player-download-link" class="btn-submit" download>Download File</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- JavaScript -->
+  <script src="/static/js/ui.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
