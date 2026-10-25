@@ -12,6 +12,7 @@ import time
 import uuid
 from pathlib import Path
 from typing import Dict, List, Optional
+from urllib.parse import quote
 
 from fastapi import (
     BackgroundTasks,
@@ -297,11 +298,16 @@ async def stream_media(filename: str, request: Request):
         }
         return StreamingResponse(iterfile(), status_code=206, headers=headers)
 
+    # Sanitize filename for HTTP headers (latin-1 safe)
+    safe_name = filename.encode("ascii", "ignore").decode("ascii") or "video.mp4"
+    encoded_name = quote(filename)
     return FileResponse(
         path=str(filepath),
         media_type="video/mp4",
-        filename=filename,
-        headers={"Accept-Ranges": "bytes"},
+        headers={
+            "Content-Disposition": f"inline; filename=""{safe_name}""; filename*=UTF-8''{encoded_name}",
+            "Accept-Ranges": "bytes",
+        },
     )
 
 
@@ -317,12 +323,14 @@ async def download_file_to_client(filename: str):
     if not filepath.exists() or not filepath.is_file():
         raise HTTPException(status_code=404, detail="File not found")
 
+    # Sanitize filename for HTTP headers (RFC 5987 encoding for non-ASCII)
+    safe_name = filename.encode("ascii", "ignore").decode("ascii") or "video.mp4"
+    encoded_name = quote(filename)
     return FileResponse(
         path=str(filepath),
         media_type="video/mp4",
-        filename=filename,
         headers={
-            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Content-Disposition": f"attachment; filename=""{safe_name}""; filename*=UTF-8''{encoded_name}",
             "Access-Control-Expose-Headers": "Content-Disposition",
         },
     )
