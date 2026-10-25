@@ -226,83 +226,100 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       activeTaskId = data.task_id;
-      connectWebSocket(activeTaskId);
+      // Use pure HTTP polling - reliable on all cloud hosts (no WebSocket needed)
+      pollTaskProgress(activeTaskId);
     } catch (err) {
       UI.showToast(err.message, "error");
       progressCard.style.display = "none";
     }
   }
 
-  function connectWebSocket(taskId) {
-    if (activeSocket) {
-      activeSocket.close();
-    }
+  // Track last known history count to detect new files when polling fails
+  let _lastHistoryCount = 0;
+  let _convertingStart = null;
 
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws/progress/${taskId}`;
-
-    let wsConnected = false;
-
-    try {
-      activeSocket = new WebSocket(wsUrl);
-
-      activeSocket.onopen = () => {
-        wsConnected = true;
-      };
-
-      activeSocket.onmessage = (event) => {
-        const msg = JSON.parse(event.data);
-        updateProgressUI(msg);
-      };
-
-      activeSocket.onerror = () => {
-        pollTaskProgress(taskId);
-      };
-
-      // If WebSocket closes before finished, fall back to polling
-      activeSocket.onclose = () => {
-        if (activeTaskId === taskId) {
-          pollTaskProgress(taskId);
-        }
-      };
-
-      // Timeout: if WS not connected in 3s, start polling in parallel
-      setTimeout(() => {
-        if (!wsConnected) {
-          pollTaskProgress(taskId);
-        }
-      }, 3000);
-
-    } catch (e) {
-      pollTaskProgress(taskId);
-    }
-  }
-
-  let _pollingActive = {};
   function pollTaskProgress(taskId) {
-    if (_pollingActive[taskId]) return; // Don't double-poll
-    _pollingActive[taskId] = true;
-
+    let consecutiveErrors = 0;
     const interval = setInterval(async () => {
+      if (activeTaskId !== taskId) {
+        clearInterval(interval);
+        return;
+      }
       try {
         const res = await fetch(`/api/progress/${taskId}`);
         if (res.ok) {
+          consecutiveErrors = 0;
           const msg = await res.json();
-          updateProgressUI(msg);
-          if (msg.status === "finished" || msg.status === "error") {
-            clearInterval(interval);
-            delete _pollingActive[taskId];
-          }
+          updateProgressUI(msg, interval);
+        } else if (res.status === 404) {
+          // Task gone from memory — check history for completed file
+          clearInterval(interval);
+          await checkHistoryForNewDownload();
         }
       } catch (e) {
-        clearInterval(interval);
-        delete _pollingActive[taskId];
+        consecutiveErrors++;
+        if (consecutiveErrors >= 5) {
+          clearInterval(interval);
+          await checkHistoryForNewDownload();
+        }
       }
-    }, 1000);
+    }, 800);
   }
 
-  function updateProgressUI(data) {
+  // Fallback: if polling fails, look for a newly downloaded file in history
+  async function checkHistoryForNewDownload() {
+    try {
+      const res = await fetch("/api/history");
+      const data = await res.json();
+      if (data.success && data.videos && data.videos.length > _lastHistoryCount) {
+        const newest = data.videos[0];
+        triggerFinished(newest.filename, newest.filepath || "");
+        loadHistory();
+      } else {
+        progressStatusLabel.textContent = "⚠ Could not confirm status. Check Library below.";
+        progressSpinner.style.display = "none";
+        loadHistory();
+      }
+    } catch (e) {
+      progressSpinner.style.display = "none";
+    }
+  }
+
+  function triggerFinished(filename, filepath) {
+    progressBarFill.style.width = "100%";
+    progressPercentLabel.textContent = "100%";
+    progressStatusLabel.textContent = `✓ Completed: ${filename}`;
+    progressSpinner.style.display = "none";
+    completeActions.style.display = "flex";
+    activeTaskId = null;
+    _convertingStart = null;
+
+    const dlUrl = `/api/download-file/${encodeURIComponent(filename)}`;
+    const btnSaveDevice = document.getElementById("btn-save-device");
+    if (btnSaveDevice) {
+      btnSaveDevice.href = dlUrl;
+      btnSaveDevice.download = filename;
+      btnSaveDevice.style.display = "inline-flex";
+    }
+
+    // Auto-trigger browser download
+    setTimeout(() => {
+      const a = document.createElement("a");
+      a.href = dlUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }, 500);
+
+    currentDownloadedFile = { filename, filepath };
+    UI.showToast("✅ Video ready! Saving to your device...", "success");
+    loadHistory();
+  }
+
+  function updateProgressUI(data, interval) {
     if (data.status === "downloading") {
+      _convertingStart = null;
       progressBarFill.style.width = `${data.progress_percent}%`;
       progressPercentLabel.textContent = `${data.progress_percent}%`;
       progressStatusLabel.textContent = "Downloading stream in full resolution...";
@@ -313,41 +330,18 @@ document.addEventListener("DOMContentLoaded", () => {
       progressBarFill.style.width = "100%";
       progressPercentLabel.textContent = "100%";
       progressStatusLabel.textContent = "Remuxing to strict .MP4 via FFmpeg...";
-      // Show save button hint during conversion (file not ready yet, but visible)
       progressSpinner.style.display = "block";
-    } else if (data.status === "finished") {
-      progressBarFill.style.width = "100%";
-      progressPercentLabel.textContent = "100%";
-      progressStatusLabel.textContent = `✓ Completed: ${data.filename || "Video saved"}`;
-      progressSpinner.style.display = "none";
-      completeActions.style.display = "flex";
-      activeTaskId = null; // Stop polling
-
-      const btnSaveDevice = document.getElementById("btn-save-device");
-      if (btnSaveDevice && data.filename) {
-        const dlUrl = `/api/download-file/${encodeURIComponent(data.filename)}`;
-        btnSaveDevice.href = dlUrl;
-        btnSaveDevice.download = data.filename;
-        btnSaveDevice.style.display = "inline-flex";
-        // Auto-trigger download after short delay
-        setTimeout(() => {
-          const a = document.createElement("a");
-          a.href = dlUrl;
-          a.download = data.filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }, 600);
+      // If stuck converting for >30s, check history as fallback
+      if (!_convertingStart) _convertingStart = Date.now();
+      if (Date.now() - _convertingStart > 30000) {
+        clearInterval(interval);
+        checkHistoryForNewDownload();
       }
-
-      currentDownloadedFile = {
-        filename: data.filename,
-        filepath: data.filepath,
-      };
-
-      UI.showToast("✅ Video ready! Saving to your device...", "success");
-      loadHistory();
+    } else if (data.status === "finished") {
+      clearInterval(interval);
+      triggerFinished(data.filename, data.filepath);
     } else if (data.status === "error") {
+      clearInterval(interval);
       progressStatusLabel.textContent = `✗ Error: ${data.error || "Download failed"}`;
       progressSpinner.style.display = "none";
       UI.showToast(data.error || "Download failed", "error");
