@@ -81,12 +81,20 @@ class RevealRequest(BaseModel):
 
 
 @app.get("/", response_class=HTMLResponse)
+@app.head("/")
 async def serve_index():
     index_file = STATIC_DIR / "index.html"
     if not index_file.exists():
         raise HTTPException(status_code=404, detail="Frontend template not found")
     with open(index_file, "r", encoding="utf-8") as f:
         return f.read()
+
+
+@app.get("/health")
+@app.head("/health")
+async def health_check():
+    """Health check endpoint for Render / Docker / load balancers."""
+    return {"status": "ok", "service": "Instagram Video Downloader"}
 
 
 @app.post("/api/extract")
