@@ -241,8 +241,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws/progress/${taskId}`;
 
+    let wsConnected = false;
+
     try {
       activeSocket = new WebSocket(wsUrl);
+
+      activeSocket.onopen = () => {
+        wsConnected = true;
+      };
 
       activeSocket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
@@ -250,15 +256,33 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       activeSocket.onerror = () => {
-        // Fallback to polling
         pollTaskProgress(taskId);
       };
+
+      // If WebSocket closes before finished, fall back to polling
+      activeSocket.onclose = () => {
+        if (activeTaskId === taskId) {
+          pollTaskProgress(taskId);
+        }
+      };
+
+      // Timeout: if WS not connected in 3s, start polling in parallel
+      setTimeout(() => {
+        if (!wsConnected) {
+          pollTaskProgress(taskId);
+        }
+      }, 3000);
+
     } catch (e) {
       pollTaskProgress(taskId);
     }
   }
 
+  let _pollingActive = {};
   function pollTaskProgress(taskId) {
+    if (_pollingActive[taskId]) return; // Don't double-poll
+    _pollingActive[taskId] = true;
+
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/progress/${taskId}`);
@@ -267,12 +291,14 @@ document.addEventListener("DOMContentLoaded", () => {
           updateProgressUI(msg);
           if (msg.status === "finished" || msg.status === "error") {
             clearInterval(interval);
+            delete _pollingActive[taskId];
           }
         }
       } catch (e) {
         clearInterval(interval);
+        delete _pollingActive[taskId];
       }
-    }, 500);
+    }, 1000);
   }
 
   function updateProgressUI(data) {
@@ -287,21 +313,31 @@ document.addEventListener("DOMContentLoaded", () => {
       progressBarFill.style.width = "100%";
       progressPercentLabel.textContent = "100%";
       progressStatusLabel.textContent = "Remuxing to strict .MP4 via FFmpeg...";
+      // Show save button hint during conversion (file not ready yet, but visible)
+      progressSpinner.style.display = "block";
     } else if (data.status === "finished") {
       progressBarFill.style.width = "100%";
       progressPercentLabel.textContent = "100%";
       progressStatusLabel.textContent = `✓ Completed: ${data.filename || "Video saved"}`;
       progressSpinner.style.display = "none";
       completeActions.style.display = "flex";
+      activeTaskId = null; // Stop polling
 
       const btnSaveDevice = document.getElementById("btn-save-device");
       if (btnSaveDevice && data.filename) {
-        btnSaveDevice.href = `/api/download-file/${encodeURIComponent(data.filename)}`;
+        const dlUrl = `/api/download-file/${encodeURIComponent(data.filename)}`;
+        btnSaveDevice.href = dlUrl;
         btnSaveDevice.download = data.filename;
-        // Automatically trigger browser download on user's device
+        btnSaveDevice.style.display = "inline-flex";
+        // Auto-trigger download after short delay
         setTimeout(() => {
-          btnSaveDevice.click();
-        }, 400);
+          const a = document.createElement("a");
+          a.href = dlUrl;
+          a.download = data.filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, 600);
       }
 
       currentDownloadedFile = {
@@ -309,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filepath: data.filepath,
       };
 
-      UI.showToast("Video downloaded in original quality MP4! Saving to your device...", "success");
+      UI.showToast("✅ Video ready! Saving to your device...", "success");
       loadHistory();
     } else if (data.status === "error") {
       progressStatusLabel.textContent = `✗ Error: ${data.error || "Download failed"}`;
